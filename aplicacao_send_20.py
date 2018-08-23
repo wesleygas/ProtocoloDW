@@ -66,7 +66,7 @@ def main():
     print("tentado transmitir .... {} bytes".format(txLen))
 
     startTime = time.time()
-    com.sendData(b)
+    com.sendData(b, txLen)
     
     txSize = 0
     txSize = com.tx.getStatus()

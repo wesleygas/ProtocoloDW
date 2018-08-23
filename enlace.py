@@ -20,6 +20,8 @@ from interfaceFisica import fisica
 from enlaceRx import RX
 from enlaceTx import TX
 
+import empacotador
+
 class enlace(object):
     """ This class implements methods to the interface between Enlace and Application
     """
@@ -50,10 +52,13 @@ class enlace(object):
     ################################
     # Application  interface       #
     ################################
-    def sendData(self, data):
+    def sendData(self, data, txLen):
         """ Send data over the enlace interface
         """
-        self.tx.sendBuffer(data)
+
+        packedData = empacotador.empacotar(data, txLen)
+
+        self.tx.sendBuffer(packedData)
 
     def getData(self, size):
         """ Get n data over the enlace interface
