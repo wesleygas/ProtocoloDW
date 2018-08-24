@@ -16,7 +16,7 @@ def depack(data,len_data):
             i += 6
         elif data_list[i:i+3] == [190,186,218]:
         	found_eop = True
-        	print("EOP encontrado na posição {0}".format(i))
+        	print("EOP encontrado na posição {0}".format(i-20))
         	break
         else:
             list_unpacked.append(data_list[i])
