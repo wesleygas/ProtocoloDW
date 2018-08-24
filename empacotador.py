@@ -42,5 +42,13 @@ def slicer(data, size):
 
 def stuff(data):
     stuffed_payload = []       
-    
+    i = 0
+    while(i < len(data)):
+        if(data[i:i+3] == [190,186,218]):
+            stuffed_payload+= [190,239,186,239,218,239]
+            i+= 3
+        else:
+            stuffed_payload.append(data[i])
+            i+= 1
+
     return stuffed_payload
