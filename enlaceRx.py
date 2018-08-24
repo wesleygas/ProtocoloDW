@@ -107,7 +107,7 @@ class RX(object):
             anterior = self.getBufferLen()
             #print(self.buffer)
             time.sleep(0.5)
-            print("i`m stuck", self.getBufferLen())
+            
             if(self.getBufferLen() < 2):
                 initialTime = time.time()
             if (self.getBufferLen() == anterior and self.getBufferLen() > 0):

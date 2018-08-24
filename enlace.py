@@ -67,9 +67,9 @@ class enlace(object):
         """
         print('entrou na leitura e tentara ler em algum momento' )
         data = self.rx.getNData(size)
-        # data_parsed, isvalid = desempacotar.depack(data,len(data))
+        data_valid , data_parsed = desempacotar.depack(data,len(data))
        
-        return(data, len(data))
+        return(data_parsed, len(data_parsed))
 
 
 
