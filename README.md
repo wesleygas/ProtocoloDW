@@ -11,4 +11,4 @@ STUFFING:
 
 TAIL/EOP:
 
-0xBAEBADA (Pq é legal e dá pra ler facil)
+0xBEBADA || 190 186 218  (Pq é legal e dá pra ler facil)
