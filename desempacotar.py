@@ -16,6 +16,7 @@ def depack(data,len_data):
             i += 6
         elif data_list[i:i+3] == [190,186,218]:
         	found_eop = True
+        	print("EOP encontrado na posição {0}".format(i))
         	break
         else:
             list_unpacked.append(data_list[i])
@@ -30,8 +31,8 @@ def depack(data,len_data):
     	print("EOP não encontrado")
     	return False, bytes(list_unpacked)
     elif (len(list_unpacked) != size):
-    	print("""Tamanho no HEAD não
-    	são compativeis com os dados recebidoas""")
+    	print("Tamanho no HEAD não são compativeis com os dados recebidos")
+    	print("Deveria ser {0} bytes e foram {1}".format(list_unpacked,size))
     	return False, bytes(list_unpacked)
     else:
     	return False, bytes(list_unpacked)
