@@ -23,8 +23,8 @@ from tkinter.filedialog import askopenfilename, asksaveasfile
 # se estiver usando windows, o gerenciador de dispositivos informa a porta
 
 #serialName = "/dev/ttyACM0"           # Ubuntu (variacao de)
-serialName = "/dev/cu.usbmodem144241" # Mac    (variacao de)
-# serialName = "COM14"                  # Windows(variacao de)
+#serialName = "/dev/cu.usbmodem144241" # Mac    (variacao de)
+serialName = "COM20"                  # Windows(variacao de)
 baurdrate = 115200
 
 
@@ -46,32 +46,33 @@ def main():
     
     Tk().withdraw()
     filename = askopenfilename()
-    extension = "." + filename.split(".")[-1]
+    #extension = "." + filename.split(".")[-1]
     with open(filename, "rb") as File:
          f = File.read()
          b = bytearray(f)
 
     print("Peguei o arquivo" + filename)
    
-    
-    #com.disable()
-    #ListTxBuffer.append(x)
-    #txBuffer = bytes(header)
+
+
+
     txLen    = len(b)
     print(txLen)
     ETTransmit = 2*txLen/(baurdrate/8)
     print("Tempo estimado para a transferencia: {} segundos".format(ETTransmit)) 
-
+    throughput = txLen/ETTransmit
+    print("Throughput: ", throughput)
     # Transmite dado
     print("tentado transmitir .... {} bytes".format(txLen))
 
+    
+    
     startTime = time.time()
     com.sendData(b, txLen)
     
-    txSize = 0
     txSize = com.tx.getStatus()
     # print (txSize)
-    # print("Transferência finalizada em {} segundos".format((time.time() - startTime)))
+    print("Transferência finalizada em {} segundos".format((time.time() - startTime)))
     
 
 

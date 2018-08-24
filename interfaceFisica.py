@@ -12,6 +12,8 @@ import serial
 # importa pacote para conversão binário ascii
 import binascii
 
+import time
+
 #################################
 # Interface com a camada física #
 #################################
@@ -71,8 +73,10 @@ class fisica(object):
         Software flow control between both
         sides of communication.
         """
+        startTime = time.time()
         nTx = self.port.write(self.encode(txBuffer))
         self.port.flush()
+        print("Transferência finalizada em {} segundos".format(time.time() - startTime))
         return(nTx/2)
 
     def read(self, nBytes):
