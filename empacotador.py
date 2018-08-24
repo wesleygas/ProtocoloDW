@@ -19,9 +19,6 @@ def empacotar(data, size):
         stuffed_payload = stuff(payloads[i])
 
         packedData += list(head) + stuffed_payload + list(EOP.to_bytes(3, byteorder='big'))
-
-
-
     
     return bytes(packedData)
 
@@ -45,6 +42,7 @@ def stuff(data):
     i = 0
     while(i < len(data)):
         if(data[i:i+3] == [190,186,218]):
+            print("Found EOP within data at position ",i)
             stuffed_payload+= [190,239,186,239,218,239]
             i+= 3
         else:

@@ -12,6 +12,8 @@ import serial
 # importa pacote para conversão binário ascii
 import binascii
 
+import time
+
 #################################
 # Interface com a camada física #
 #################################
@@ -71,6 +73,7 @@ class fisica(object):
         Software flow control between both
         sides of communication.
         """
+
         nTx = self.port.write(self.encode(txBuffer))
         self.port.flush()
         return(nTx/2)
