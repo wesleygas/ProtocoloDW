@@ -23,8 +23,8 @@ from tkinter.filedialog import askopenfilename, asksaveasfile
 # se estiver usando windows, o gerenciador de dispositivos informa a porta
 
 #serialName = "/dev/ttyACM0"           # Ubuntu (variacao de)
-#serialName = "/dev/cu.usbmodem144241" # Mac    (variacao de)
-serialName = "COM20"                  # Windows(variacao de)
+serialName = "/dev/cu.usbmodem145231" # Mac    (variacao de)
+# serialName = "COM20"                  # Windows(variacao de)
 baurdrate = 115200
 
 
@@ -57,7 +57,7 @@ def main():
 
 
     txLen    = len(b)
-    print(txLen)
+    # print(txLen)
     ETTransmit = 2*txLen/(baurdrate/8)
     print("Tempo estimado para a transferencia: {} segundos".format(ETTransmit)) 
     throughput = txLen/ETTransmit
