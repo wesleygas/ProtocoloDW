@@ -9,7 +9,7 @@
 
 print("comecou")
 
-from enlace import *
+from enlace import * 
 import time
 
 from tkinter import Tk
@@ -23,8 +23,8 @@ from tkinter.filedialog import askopenfilename, asksaveasfile
 # se estiver usando windows, o gerenciador de dispositivos informa a porta
 
 #serialName = "/dev/ttyACM0"           # Ubuntu (variacao de)
-#serialName = "/dev/tty.usbmodem1411" # Mac    (variacao de)
-serialName = "COM14"                  # Windows(variacao de)
+serialName = "/dev/cu.usbmodem144241" # Mac    (variacao de)
+# serialName = "COM14"                  # Windows(variacao de)
 baurdrate = 115200
 
 
