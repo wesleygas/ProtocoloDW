@@ -9,6 +9,7 @@
 
 # Importa pacote de tempo
 import time
+import desempacotar
 
 # Construct Struct
 #from construct import *
@@ -64,7 +65,13 @@ class enlace(object):
         """ Get n data over the enlace interface
         Return the byte array and the size of the buffer
         """
-        print('entrou na leitura e tentara ler ' + str(size) )
+        print('entrou na leitura e tentara ler em algum momento' )
         data = self.rx.getNData(size)
+        # data_parsed, isvalid = desempacotar.depack(data,len(data))
        
         return(data, len(data))
+
+
+
+
+

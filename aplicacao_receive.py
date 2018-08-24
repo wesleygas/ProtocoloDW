@@ -26,8 +26,8 @@ from tkinter.filedialog import asksaveasfile
 # se estiver usando windows, o gerenciador de dispositivos informa a porta
 
 #serialName = "/dev/ttyACM0"           # Ubuntu (variacao de)
-#erialName = "/dev/cu.usbmodem146241" # Mac    (variacao de)
-serialName = "COM14"                  # Windows(variacao de)
+serialName = "/dev/cu.usbmodem144221" # Mac    (variacao de)
+# serialName = "COM14"                  # Windows(variacao de)
 
 
 
@@ -69,10 +69,10 @@ def main():
     print("Comunicação encerrada")
     print("-------------------------")
     com.disable()
-
+    # defaultextension = ".jpg"
 
     Tk().withdraw()
-    f = asksaveasfile(mode='wb', defaultextension = ".jpg")
+    f = asksaveasfile(mode='wb')
     if f is None: # asksaveasfile return `None` if dialog closed with "cancel".
         pass
     else:

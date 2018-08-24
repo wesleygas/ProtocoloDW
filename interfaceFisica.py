@@ -22,7 +22,6 @@ class fisica(object):
         self.name        = name
         self.port        = None
         self.baudrate    = 115200
-        #self.baudrate    = 9600
         self.bytesize    = serial.EIGHTBITS
         self.parity      = serial.PARITY_EVEN
         self.stop        = serial.STOPBITS_ONE
@@ -97,5 +96,4 @@ class fisica(object):
             return(rxBufferDecoded, nRx)
         except :
             print("[ERRO] interfaceFisica, read, decode. buffer : {}".format(rxBufferValid))
-            return(b"", 0)
-
+            return(b"", 0) 
