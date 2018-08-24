@@ -11,4 +11,4 @@ STUFFING:
 
 TAIL/EOP:
 
-0xBABACA (Pq é legal e dá pra ler facil)
+0xBAEBADA (Pq é legal e dá pra ler facil)
