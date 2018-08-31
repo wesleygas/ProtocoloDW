@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+ #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #####################################################
 # Camada Física da Computação
@@ -66,8 +66,9 @@ class enlace(object):
         Return the byte array and the size of the buffer
         """
         print('entrou na leitura e tentara ler em algum momento' )
-        data = self.rx.getNData(size)
-        data_valid , data_parsed = desempacotar.depack(data,len(data))
+
+        data = self.rx.getNData()
+        msg_type, data_valid , data_parsed = desempacotar.depack(data,len(data))
        
         return(data_parsed, len(data_parsed))
 
