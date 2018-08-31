@@ -109,10 +109,46 @@ class enlace(object):
         Return the byte array and the size of the buffer
         """
         print('entrou na leitura e tentara ler em algum momento' )
+        while(True):
+            data = self.rx.getNData()
+            msg_type, data_valid , data_parsed = desempacotar.depack(data,len(data))
 
-        data = self.rx.getNData()
-        msg_type, data_valid , data_parsed = desempacotar.depack(data,len(data))
-       
+
+            if (data_valid == False):
+                continue
+            elif (msg_type == 1):  #Começa a visualizar os outros pacotes
+                startTime = time.time()
+                while(time.time()-startTime<5):
+                    if msg_type == 1:
+                        self.rx.clearBuffer()
+                        self.tx.sendBuffer(empacotador.empacotar([],2,0))
+                       
+                        data = self.rx.getNData()
+                        msg_type, data_valid , data_parsed = desempacotar.depack(data,len(data))
+                        startTime = time.time()
+
+                    if msg_type == 3:
+                        self.rx.clearBuffer()
+
+                        data = self.rx.getNData()
+                        self.tx.sendBuffer(empacotador.empacotar([],5,0))
+                        msg_type, data_valid , data_parsed = desempacotar.depack(data,len(data))
+                        startTime = time.time()
+                        
+
+                    if msg_type == 4:
+                        data = self.rx.getNData()
+                        msg_type, data_valid , data_parsed = desempacotar.depack(data,len(data))
+                        return (data_parsed, len(data_parsed))
+
+
+                else:
+                    print("TIMEOUT_ERROR NO RECEIVE")
+            else:
+                print("Ordens de mensagens não correta")
+                continue
+
+
         return(data_parsed, len(data_parsed))
 
 

@@ -9,7 +9,7 @@
 
 # Importa pacote de tempo
 import time
-
+from desempacotar import find_EOP_BUFFER
 # Threads
 import threading
 
@@ -93,30 +93,23 @@ class RX(object):
         self.threadResume()
         return(b)
 
+
+
     def getNData(self):
-        """ Read N bytes of data from the reception buffer
 
-        This function blocks until the number of bytes is received
-        """
-#        temPraLer = self.getBufferLen()
-#        print('leu %s ' + str(temPraLer) )
-        
-        #if self.getBufferLen() < size:
-            #print("ERROS!!! TERIA DE LER %s E LEU APENAS %s", (size,temPraLer))
+        found_eop, i = find_EOP_BUFFER(self.getBufferLen(),self.buffer)
         startTime = time.time()
-        while(time.time() - startTime):
-            anterior = self.getBufferLen()
-            #print(self.buffer)
-            time.sleep(0.5)
-            
-            if(self.getBufferLen() < 2):
-                initialTime = time.time()
-            if (self.getBufferLen() == anterior and self.getBufferLen() > 0):
-                print("A transmissão foi encerrada em {} segundos!".format(time.time() - initialTime - 1))
-                break
+        while ( (not found_eop) and (time.time() - startTime <5)):   #(not found_eop) and
+            found_eop, i = find_EOP_BUFFER(self.getBufferLen(),self.buffer)
 
-             
-        return(self.getBuffer(self.getBufferLen()))
+            time.sleep(0.5)
+        if (found_eop):
+            return(self.getBuffer(i+3))
+        else:
+
+            return(b"")
+
+        # return(self.getBuffer(self.getBufferLen()))
 
 
     def clearBuffer(self):
