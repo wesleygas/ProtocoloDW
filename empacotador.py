@@ -1,24 +1,33 @@
 maxPayloadLen = 65535
 EOP = int("0xBEBADA", 16)
 
-def empacotar(data, size):
+def empacotar(data, data_type, size):
     global maxPayloadLen, EOP
     packedData = []
     dataList = list(data)
-    payloads = slicer(dataList, size)
-    #TODO: Stuff this shit!
     
-    print(len(payloads[0]))
-    for i in range(len(payloads)):
-        head = [0]*20
-        payloadSize = (len(payloads[i])).to_bytes(2, byteorder='big')
-        head[0:2] = payloadSize
-        head[2] = i
-        head[3] = len(payloads)
-        head = bytes(head)
-        stuffed_payload = stuff(payloads[i])
+    if(data_type == 4):
+        payloads = slicer(dataList, size)
+        #TODO: Stuff this shit!
+        
+        print(len(payloads[0]))
+        for i in range(len(payloads)):
+            head = [0]*20
+            payloadSize = (len(payloads[i])).to_bytes(2, byteorder='big')
+            head[0:2] = payloadSize
+            head[2] = i
+            head[3] = len(payloads)
+            head[4] = data_type
+            head = bytes(head)
+            stuffed_payload = stuff(payloads[i])
 
-        packedData += list(head) + stuffed_payload + list(EOP.to_bytes(3, byteorder='big'))
+            packedData += list(head) + stuffed_payload + list(EOP.to_bytes(3, byteorder='big'))
+    else:
+        head = [0]*20
+        head[4] = data_type
+        end_of_package = list(EOP.to_bytes(3, byteorder='big'))
+        packedData = head + end_of_package
+
     
     return bytes(packedData)
 

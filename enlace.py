@@ -53,20 +53,63 @@ class enlace(object):
     ################################
     # Application  interface       #
     ################################
-    def sendData(self, data, txLen):
+    def sendData(self, data_to_send, txLen):
         """ Send data over the enlace interface
         """
+        #Tipo 1: Abre pede comunicação para o server
+        startTime = time.time()
+        dados = []
+        dados = self.rx.getNData()
+        tipo2_recebido = False
+        waiting_ack = False
+        error_count = 0
+        while(time.time() - startTime < 5):
+            self.tx.sendBuffer(empacotador.empacotar([],1,0))
+            time.sleep(0.2)
+            if(len(dados) < 23):
+                continue
+            else:
+                print(len(dados))
+                isOk, payload, msgType = desempacotar.depack(dados,len(dados))
+                if(isOk):
+                    if(msgType == 2):
+                        tipo2_recebido = True
+                        dados = []
+                        startTime = time.time()
+                        dados = self.rx.getNData()
+                        self.tx.sendBuffer(empacotador.empacotar([],3,0))
+                    if(tipo2_recebido and (not waiting_ack)):
+                        self.tx.sendBuffer(empacotador.empacotar(data_to_send,4,txLen))
+                        waiting_ack = True
+                    if(waiting_ack and (msgType == 6)):
+                        self.tx.sendBuffer(empacotador.empacotar(data_to_send,4,txLen))
+                        startTime = time.time()
+                        print("Received NACK, resending data for the {} time".format(error_count+1))
+                        error_count += 1
+                    elif(msgType == 5):
+                        break
+                    if(error_count > 5):
+                        print("Too much atempts, shutting down")
+                        break
+                else:
+                    print("Error at ENLACE: Could not depack data. Stopping transmission")
+                    break               
+                    
 
-        packedData = empacotador.empacotar(data, txLen)
+        else:
+            #Timeout Error
+            print("TIMEOUT_ERROR:", end=" ")
+            if(not tipo2_recebido):
+                print("No response from server")
+        packedData = empacotador.empacotar(data_to_send,4, txLen)
 
-        self.tx.sendBuffer(packedData)
 
     def getData(self, size):
         """ Get n data over the enlace interface
         Return the byte array and the size of the buffer
         """
         print('entrou na leitura e tentara ler em algum momento' )
-        data = self.rx.getNData(size)
+        data = self.rx.getNData()
         data_valid , data_parsed = desempacotar.depack(data,len(data))
        
         return(data_parsed, len(data_parsed))
