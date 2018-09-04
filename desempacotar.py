@@ -9,8 +9,8 @@ def depack(data,len_data):
     msg_type = int(head[4])
 
 
-    print("A mensagem é do tipo {0}".format(msg_type))
-    print("Overhead:" , (size/len_data))
+    print("DEPACK: A mensagem é do tipo {0}".format(msg_type))
+    #print("Overhead:" , (size/len_data))
 
 
     found_eop,list_unpacked = find_EOP(len_data,data_list,head_size)
@@ -59,7 +59,7 @@ def find_EOP_BUFFER(len_data, data):
     found_eop = False
     i = 0
     for i in range(len_data -2):
-        print("OK")
+        #print("OK")
         if data_list[i:i+3] == [190,186,218]:
             found_eop = True
 

@@ -58,45 +58,47 @@ class enlace(object):
         """
         #Tipo 1: Abre pede comunicação para o server
         startTime = time.time()
+        data_type = 1
         dados = []
-        tipo2_recebido = False
         waiting_ack = False
         error_count = 0
+        tipo2_recebido = False
         while(time.time() - startTime < 5):
-            self.tx.sendBuffer(empacotador.empacotar([],1,0))
-            dados = self.rx.getBuffer(self.rx.getBufferLen())
-            time.sleep(0.2)
-            if(len(dados) < 23):
-                continue
-            else:
-                print(len(dados))
-                isOk, payload, msgType = desempacotar.depack(dados,len(dados))
-                if(isOk):
-                    if(msgType == 2):
-                        tipo2_recebido = True
-                        dados = []
-                        startTime = time.time()
-                        dados = self.rx.getBuffer(self.rx.getBufferLen())
-                        self.tx.sendBuffer(empacotador.empacotar([],3,0))
-                        waiting_ack = True
-                    if(tipo2_recebido and (not waiting_ack)):
-                        self.tx.sendBuffer(empacotador.empacotar(data_to_send,4,txLen))
-                        waiting_ack = True
-                    if(waiting_ack and (msgType == 6)):
-                        self.tx.sendBuffer(empacotador.empacotar(data_to_send,4,txLen))
-                        startTime = time.time()
-                        print("Received NACK, resending data for the {} time".format(error_count+1))
-                        error_count += 1
-                    elif(msgType == 5):
-                        break
-                    if(error_count > 5):
-                        print("Too much atempts, shutting down")
-                        break
-                else:
-                    print("Error at ENLACE: Could not depack data. Stopping transmission")
-                    break               
-                    
+            if(data_type == 1):
+                self.tx.sendBuffer(empacotador.empacotar([],1,0))
+                print("Mandando tipo 1")
+                dados = self.rx.getNData()
+                msgType, isOk, data = desempacotar.depack(dados,len(dados))
+                print("RECEBI MSG DO TIPO",msgType)
+                if(msgType == 2):
+                    data_type = 2
+                    tipo2_recebido = True
+            elif(data_type == 2):
+                self.tx.sendBuffer(empacotador.empacotar([],3,0))
+                print("Mandando tipo 3")
+                data_type = 4
+            elif(data_type == 4):         
+                print("Sending actual Data")
+                self.tx.sendBuffer(empacotador.empacotar(data_to_send,4,txLen))
+                waiting_ack = True
+                dados = self.rx.getNData()
+                msgType, isOk, data = desempacotar.depack(dados,len(dados))
 
+
+
+            if(waiting_ack and (msgType == 6)):
+                self.tx.sendBuffer(empacotador.empacotar(data_to_send,4,txLen))
+                startTime = time.time()
+                print("Received NACK, resending data for the {} time".format(error_count+1))
+                error_count += 1
+
+            elif(msgType == 5):
+                break
+                
+            if(error_count > 5):
+                print("Too many atempts, shutting down")
+                break  
+                    
         else:
             #Timeout Error
             print("TIMEOUT_ERROR:", end=" ")
@@ -145,6 +147,7 @@ class enlace(object):
 
                 else:
                     print("TIMEOUT_ERROR NO RECEIVE")
+                    break
             else:
                 print("Ordens de mensagens não correta")
                 continue

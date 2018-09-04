@@ -26,10 +26,10 @@ from tkinter.filedialog import asksaveasfile
 # se estiver usando windows, o gerenciador de dispositivos informa a porta
 
 #serialName = "/dev/ttyACM0"           # Ubuntu (variacao de)
-serialName = "/dev/cu.usbmodem146241" # Mac    (variacao de)
-#serialName = "COM20"                  # Windows(variacao de)
+#serialName = "/dev/cu.usbmodem146241" # Mac    (variacao de)
+serialName = "COM14"                  # Windows(variacao de)
 
-
+mockData = True
 
 print("porta COM aberta com sucesso")
 
@@ -70,15 +70,16 @@ def main():
     print("-------------------------")
     com.disable()
     # defaultextension = ".jpg"
-
-    Tk().withdraw()
-    f = asksaveasfile(mode='wb')
-    if f is None: # asksaveasfile return `None` if dialog closed with "cancel".
-        pass
+    if(mockData):
+        Tk().withdraw()
+        f = asksaveasfile(mode='wb')
+        if f is None: # asksaveasfile return `None` if dialog closed with "cancel".
+            pass
+        else:
+            f.write(rxBuffer)
+            f.close() # `()` was missing.
     else:
-        f.write(rxBuffer)
-        f.close() # `()` was missing.
-  
+        print(rxBuffer)
    #print (rxBuffer)
 
     
