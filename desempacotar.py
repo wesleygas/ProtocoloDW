@@ -1,11 +1,14 @@
 def depack(data,len_data):
     head_size = 20
     data_list = list(data)
+    if (len(data_list)<21):
+        return None, False, None
     head = data_list[:head_size]
-    
     # print(data_list)
     size = int.from_bytes(head[0:2], byteorder = 'big')
     msg_type = int(head[4])
+
+
     print("A mensagem é do tipo {0}".format(msg_type))
     print("Overhead:" , (size/len_data))
 
@@ -41,7 +44,7 @@ def find_EOP(len_data, data_list,head_size):
             i += 6
         elif data_list[i:i+3] == [190,186,218]:
             found_eop = True
-            print("EOP encontrado na posição {0}".format(i-20))
+            print("EOP encontrado na posição {0} do pacote".format(i-20))
             break
         else:
             list_unpacked.append(data_list[i])
@@ -51,6 +54,21 @@ def find_EOP(len_data, data_list,head_size):
     return found_eop, list_unpacked
 
 
+def find_EOP_BUFFER(len_data, data):
+    data_list = list(data)
+    found_eop = False
+    i = 0
+    for i in range(len_data -2):
+        print("OK")
+        if data_list[i:i+3] == [190,186,218]:
+            found_eop = True
+
+            print("EOP encontrado na posição {0} do buffer".format(i+1))
+            return found_eop, i
+
+
+
+    return found_eop, i
 
 
 
