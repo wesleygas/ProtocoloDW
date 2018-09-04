@@ -59,12 +59,12 @@ class enlace(object):
         #Tipo 1: Abre pede comunicação para o server
         startTime = time.time()
         dados = []
-        dados = self.rx.getNData()
         tipo2_recebido = False
         waiting_ack = False
         error_count = 0
         while(time.time() - startTime < 5):
             self.tx.sendBuffer(empacotador.empacotar([],1,0))
+            dados = self.rx.getBuffer(self.rx.getBufferLen())
             time.sleep(0.2)
             if(len(dados) < 23):
                 continue
@@ -76,8 +76,9 @@ class enlace(object):
                         tipo2_recebido = True
                         dados = []
                         startTime = time.time()
-                        dados = self.rx.getNData()
+                        dados = self.rx.getBuffer(self.rx.getBufferLen())
                         self.tx.sendBuffer(empacotador.empacotar([],3,0))
+                        waiting_ack = True
                     if(tipo2_recebido and (not waiting_ack)):
                         self.tx.sendBuffer(empacotador.empacotar(data_to_send,4,txLen))
                         waiting_ack = True

@@ -4,6 +4,8 @@ HEAD -  20b (ou 10b) :
 
 2 bytes para tamanho -> Max payload size 65kb
 2 bytes para package count (0-255 de 0-255) -> Max file size 16.7mb 
+1 byte  para tipo da mensagem:
+    Tipos:
 
 STUFFING: 
 

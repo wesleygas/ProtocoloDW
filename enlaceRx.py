@@ -98,13 +98,9 @@ class RX(object):
 
         This function blocks until the number of bytes is received
         """
-#        temPraLer = self.getBufferLen()
-#        print('leu %s ' + str(temPraLer) )
-        
-        #if self.getBufferLen() < size:
-            #print("ERROS!!! TERIA DE LER %s E LEU APENAS %s", (size,temPraLer))
+
         startTime = time.time()
-        while(time.time() - startTime):
+        while(time.time() - startTime < 5):
             anterior = self.getBufferLen()
             #print(self.buffer)
             time.sleep(0.5)
