@@ -59,7 +59,7 @@ def find_EOP_BUFFER(len_data, data):
     found_eop = False
     i = 0
     for i in range(len_data -2):
-        print("OK")
+        # print("OK")
         if data_list[i:i+3] == [190,186,218]:
             found_eop = True
 
