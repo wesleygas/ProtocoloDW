@@ -111,43 +111,52 @@ class enlace(object):
         """ Get n data over the enlace interface
         Return the byte array and the size of the buffer
         """
+        self.rx.clearBuffer()
+        msg_types_valid = [1,3,4]
+        msg_types_received =[]
         print('entrou na leitura e tentara ler em algum momento' )
         while(True):
             data = self.rx.getNData()
             msg_type, data_valid , data_parsed = desempacotar.depack(data,len(data))
 
 
-            if (data_valid == False):
+            if (data_valid == False or msgType != 1):
                 continue
-            elif (msg_type == 1):  #Começa a visualizar os outros pacotes
+
+
+            elif (msg_type in msg_types_valid):  #Começa a visualizar os outros pacotes
                 startTime = time.time()
+                msg_types_received = [1]
                 while(time.time()-startTime<5):
+                    data = self.rx.getNData()
+                    msg_type, data_valid , data_parsed = desempacotar.depack(data,len(data))
+                    
                     if msg_type == 1:
-                        self.rx.clearBuffer()
+                        msg_types_received = [1]
+                        startTime = time.time()
+                    elif msg_type != None and not(msg_type in msg_types_received):
+                        msg_types_received.append(msg_type)
+                        startTime = time.time()
+                    elif (msg_type in msg_types_received):
+                        startTime = time.time()
+
+
+                    if (msg_types_received == [1]):
                         self.tx.sendBuffer(empacotador.empacotar([],2,0))
-                       
-                        data = self.rx.getNData()
-                        msg_type, data_valid , data_parsed = desempacotar.depack(data,len(data))
+                    
+                    elif (msg_types_received == [1,3,4])
+                      
                         startTime = time.time()
-
-                    if msg_type == 3:
-                        self.rx.clearBuffer()
-
-                        data = self.rx.getNData()
-                        self.tx.sendBuffer(empacotador.empacotar([],5,0))
-                        msg_type, data_valid , data_parsed = desempacotar.depack(data,len(data))
-                        startTime = time.time()
-                        
-
-                    if msg_type == 4:
-                        data = self.rx.getNData()
-                        msg_type, data_valid , data_parsed = desempacotar.depack(data,len(data))
-                        return (data_parsed, len(data_parsed))
-
+                        if data_valid:
+                            self.tx.sendBuffer(empacotador.empacotar([],5,0))
+                            return (data_parsed, len(data_parsed))
+                        else:
+                            self.tx.sendBuffer(empacotador.empacotar([],6,0))
 
                 else:
                     print("TIMEOUT_ERROR NO RECEIVE")
-                    break
+                    return(b"", 0)
+
             else:
                 print("Ordens de mensagens não correta")
                 continue
