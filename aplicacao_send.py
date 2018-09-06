@@ -12,7 +12,7 @@ from tkinter.filedialog import askopenfilename, asksaveasfile
 
 
 #   para saber a sua porta, execute no terminal :
-#   python -m serial.tools.list_ports
+#   python3 -m serial.tools.list_ports
 
 
 #serialName = "/dev/cu.usbmodem145231" # Mac    (variacao de)
