@@ -135,11 +135,13 @@ class enlace(object):
         msg_types_received =[]
         print('entrou na leitura e tentara ler em algum momento' )
         while(True):
+            time.sleep(0.3)
+
             data = self.rx.getNData()
             msg_type, data_valid , data_parsed = desempacotar.depack(data,len(data))
 
 
-            if (data_valid == False or msgType != 1):
+            if (data_valid == False or msg_type != 1):
                 continue
 
 
@@ -160,18 +162,21 @@ class enlace(object):
                         startTime = time.time()
 
 
-                    if (msg_types_received == [1]):
-                        self.tx.sendBuffer(empacotador.empacotar([],2,0))
-                    
-                    elif (msg_types_received == [1,3,4]):
-                      
-                        startTime = time.time()
-                        if data_valid:
-                            self.tx.sendBuffer(empacotador.empacotar([],5,0))
-                            return (data_parsed, len(data_parsed))
-                        else:
-                            self.tx.sendBuffer(empacotador.empacotar([],6,0))
-
+                    if msg_type != None:
+                        if (msg_types_received == [1]):
+                            print("mandei o tipo 2")
+                            self.tx.sendBuffer(empacotador.empacotar([],2,0))
+                        
+                        elif (msg_types_received == [1,3,4]):
+                          
+                            startTime = time.time()
+                            if data_valid:
+                                self.tx.sendBuffer(empacotador.empacotar([],5,0))
+                                print("mandei o tipo 5")
+                                return (data_parsed, len(data_parsed))
+                            else:
+                                self.tx.sendBuffer(empacotador.empacotar([],6,0))
+                                print("mandei o tipo 6")
                 else:
                     print("TIMEOUT_ERROR NO RECEIVE")
                     return(b"", 0)

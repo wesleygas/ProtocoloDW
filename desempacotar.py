@@ -8,9 +8,9 @@ def depack(data,len_data):
     size = int.from_bytes(head[0:2], byteorder = 'big')
     msg_type = int(head[4])
 
-
-    print("DEPACK: A mensagem é do tipo {0}".format(msg_type))
-    #print("Overhead:" , (size/len_data))
+    print("--------------------------------")
+    print("A mensagem é do tipo {0}".format(msg_type))
+    # print("Overhead:" , (size/len_data))
 
 
     found_eop,list_unpacked = find_EOP(len_data,data_list,head_size)
