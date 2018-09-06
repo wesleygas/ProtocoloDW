@@ -144,7 +144,7 @@ class enlace(object):
                     if (msg_types_received == [1]):
                         self.tx.sendBuffer(empacotador.empacotar([],2,0))
                     
-                    elif (msg_types_received == [1,3,4])
+                    elif (msg_types_received == [1,3,4]):
                       
                         startTime = time.time()
                         if data_valid:
