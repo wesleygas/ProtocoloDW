@@ -104,7 +104,9 @@ class RX(object):
 
             time.sleep(0.5)
         if (found_eop):
-            return(self.getBuffer(i+3))
+            a = self.getBuffer(i+3)
+            #print(a)
+            return(a)
         else:
 
             return(b"")
