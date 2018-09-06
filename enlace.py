@@ -114,13 +114,16 @@ class enlace(object):
         """ Get n data over the enlace interface
         Return the byte array and the size of the buffer
         """
+
+        info_util = b""
+
+
         self.rx.clearBuffer()
-        msg_types_valid = [1,3,4]
+        msg_types_valid = [1,3,4,7]
         msg_types_received =[]
         print('entrou na leitura e tentara ler em algum momento' )
         while(True):
-            time.sleep(0.3)
-
+            self.rx.clearBuffer()
             data = self.rx.getNData()
             msg_type, data_valid , data_parsed = desempacotar.depack(data,len(data))
 
@@ -131,36 +134,69 @@ class enlace(object):
 
             elif (msg_type in msg_types_valid):  #Começa a visualizar os outros pacotes
                 startTime = time.time()
-                msg_types_received = [1]
-                while(time.time()-startTime<5):
+                msg_types_received = []
+
+
+                while(time.time()-startTime<15):
+
                     data = self.rx.getNData()
                     msg_type, data_valid , data_parsed = desempacotar.depack(data,len(data))
                     
+
                     if msg_type == 1:
+                        self.rx.clearBuffer()
                         msg_types_received = [1]
                         startTime = time.time()
-                    elif msg_type != None and not(msg_type in msg_types_received):
-                        msg_types_received.append(msg_type)
-                        startTime = time.time()
-                    elif (msg_type in msg_types_received):
-                        startTime = time.time()
+   
+                   
+                    elif (msg_type in msg_types_valid):
+                        # print("recebi isso aqui", msg_type)
+                        if (msg_type not in msg_types_received):
+                            startTime = time.time()
+                            if msg_type == msg_types_valid[len(msg_types_received)]:
+                                msg_types_received.append(msg_type)
+                                
+                            else:
+                                print("Ordem de mensagem errada")
+                        else:
+                            startTime = time.time()
+                    else:
+                        print("recebi essa mensagem do tipo",msg_type)
+                        pass
 
+                    print(msg_types_received)
 
                     if msg_type != None:
+
                         if (msg_types_received == [1]):
-                            print("mandei o tipo 2")
+                            # print("mandei o tipo 2")
+                            # self.rx.clearBuffer()
                             self.tx.sendBuffer(empacotador.empacotar([],2,0))
                         
+                        elif (msg_types_received == [1,3]):
+                            # print("hurray")
+                            pass
+
                         elif (msg_types_received == [1,3,4]):
-                          
-                            startTime = time.time()
+                            # print(msg_types_received)
+                            pass
+
                             if data_valid:
                                 self.tx.sendBuffer(empacotador.empacotar([],5,0))
-                                print("mandei o tipo 5")
-                                return (data_parsed, len(data_parsed))
+                                # print("mandei o tipo 5")
+                                info_util = data_parsed
+
+                                
                             else:
                                 self.tx.sendBuffer(empacotador.empacotar([],6,0))
-                                print("mandei o tipo 6")
+                                # print("mandei o tipo 6")
+
+                        elif(msg_types_received == [1,3,4,7]):
+                            return (info_util, len(info_util))
+
+                        if (msg_type == 7):
+                            return(b"", 0)
+
                 else:
                     print("TIMEOUT_ERROR NO RECEIVE")
                     return(b"", 0)

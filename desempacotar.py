@@ -23,7 +23,7 @@ def depack(data,len_data):
     	return msg_type, False, bytes(list_unpacked)
     elif (len(list_unpacked) != size):
     	print("Tamanho no HEAD não são compativeis com os dados recebidos")
-    	print("Deveria ser {0} bytes e foram {1}".format(list_unpacked,size))
+    	print("Deveria ser {0} bytes e foram {1}".format(len(list_unpacked),  size))
     	return msg_type, False, bytes(list_unpacked)
     else:
     	return msg_type, False, bytes(list_unpacked)

@@ -99,14 +99,13 @@ class RX(object):
 
         found_eop, i = find_EOP_BUFFER(self.getBufferLen(),self.buffer)
         startTime = time.time()
-        while ( (not found_eop) and (time.time() - startTime <0.5)):   #(not found_eop) and
+        while ( (not found_eop) and (time.time() - startTime <3)):   #(not found_eop) and
             found_eop, i = find_EOP_BUFFER(self.getBufferLen(),self.buffer)
 
             time.sleep(0.5)
         if (found_eop):
             return(self.getBuffer(i+3))
         else:
-
             return(b"")
 
         # return(self.getBuffer(self.getBufferLen()))
