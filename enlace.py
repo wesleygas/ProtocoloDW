@@ -84,8 +84,6 @@ class enlace(object):
                 dados = self.rx.getNData()
                 msgType, isOk, data = desempacotar.depack(dados,len(dados))
 
-
-
             if(waiting_ack and (msgType == 6)):
                 self.tx.sendBuffer(empacotador.empacotar(data_to_send,4,txLen))
                 startTime = time.time()
@@ -93,8 +91,13 @@ class enlace(object):
                 error_count += 1
 
             elif(msgType == 5):
+                print("Received ACK, stopping transmission")
+                self.tx.sendBuffer(empacotador.empacotar(data_to_send,7,txLen))
                 break
-                
+            
+            if(msgType == 7):
+                print("Received stop msg, stopping transmission now.")
+                break
             if(error_count > 5):
                 print("Too many atempts, shutting down")
                 break  
@@ -104,7 +107,7 @@ class enlace(object):
             print("TIMEOUT_ERROR:", end=" ")
             if(not tipo2_recebido):
                 print("No response from server")
-        packedData = empacotador.empacotar(data_to_send,4, txLen)
+        
 
 
     def getData(self, size):
