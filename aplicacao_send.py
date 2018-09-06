@@ -16,7 +16,7 @@ from tkinter.filedialog import askopenfilename, asksaveasfile
 
 
 #serialName = "/dev/cu.usbmodem145231" # Mac    (variacao de)
-serialName = "COM14"                  # Windows(variacao de)
+serialName = "COM3"                  # Windows(variacao de)
 baurdrate = 115200
 mockFile = True #Se quiser só mandar x dados ao invés de escollher um arquivo toda vez
 
@@ -38,7 +38,7 @@ def main():
     print("comunicação aberta")
     print ("gerando dados para transmissao :")
     if(mockFile):
-        for i in range(30):
+        for i in range(200):
            rawData.append(i)
         rawData = bytes(rawData)
     else:

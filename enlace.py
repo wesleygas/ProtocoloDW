@@ -59,44 +59,72 @@ class enlace(object):
         #Tipo 1: Abre pede comunicação para o server
         startTime = time.time()
         data_type = 1
+        msgType = 0
         dados = []
         waiting_ack = False
         error_count = 0
         tipo2_recebido = False
-        while(time.time() - startTime < 5):
+        while(time.time() - startTime < 20):
             if(data_type == 1):
-                self.tx.sendBuffer(empacotador.empacotar([],1,0))
                 print("Mandando tipo 1")
-                dados = self.rx.getNData()
-                msgType, isOk, data = desempacotar.depack(dados,len(dados))
-                print("RECEBI MSG DO TIPO",msgType)
-                if(msgType == 2):
-                    data_type = 2
-                    tipo2_recebido = True
+                self.tx.sendBuffer(empacotador.empacotar([],1,0))
+                responseTime = time.time()
+                while(time.time() - responseTime < 1):
+                    dados = self.rx.getNData()
+                    msgType, isOk, data = desempacotar.depack(dados,len(dados))
+                    print("RECEBI MSG DO TIPO",msgType)
+                    if(msgType == 2):
+                        data_type = 2
+                        startTime = time.time()
+                        tipo2_recebido = True
+                        break
             elif(data_type == 2):
-                self.tx.sendBuffer(empacotador.empacotar([],3,0))
                 print("Mandando tipo 3")
-                data_type = 4
+                time.sleep(1)
+                self.rx.clearBuffer()
+                self.tx.sendBuffer(empacotador.empacotar([],3,0))
+                responseTime = time.time()
+                while(time.time() - responseTime < 5):
+                    dados = self.rx.getNData()
+                    msgType, isOk, data = desempacotar.depack(dados,len(dados))
+                    if(msgType == 2):
+                        self.tx.sendBuffer(empacotador.empacotar([],3,0))
+                else:
+                    data_type = 4
             elif(data_type == 4):         
                 print("Sending actual Data")
                 self.tx.sendBuffer(empacotador.empacotar(data_to_send,4,txLen))
-                waiting_ack = True
-                dados = self.rx.getNData()
-                msgType, isOk, data = desempacotar.depack(dados,len(dados))
+                #waiting_ack = True
+                while(time.time() - responseTime < 10):
+                    dados = self.rx.getNData()
+                    msgType, isOk, data = desempacotar.depack(dados,len(dados))
+                    if(msgType == 5):
+                        print("Received ACK, stopping transmission")
+                        msgType = 7
+                        data_type = 0
+                        self.tx.sendBuffer(empacotador.empacotar([],7,0))
+                        break
+                    elif(msgType == 6):
+                        print("Received NACK, resending data for the {} time".format(error_count+1))
+                        error_count += 1                            
+                        break
 
-            if(waiting_ack and (msgType == 6)):
-                self.tx.sendBuffer(empacotador.empacotar(data_to_send,4,txLen))
-                startTime = time.time()
-                print("Received NACK, resending data for the {} time".format(error_count+1))
-                error_count += 1
 
-            elif(msgType == 5):
-                print("Received ACK, stopping transmission")
-                self.tx.sendBuffer(empacotador.empacotar(data_to_send,7,txLen))
-                break
+            # if(waiting_ack and (msgType == 6)):
+            #     self.tx.sendBuffer(empacotador.empacotar(data_to_send,4,txLen))
+            #     startTime = time.time()
+            #     print("Received NACK, resending data for the {} time".format(error_count+1))
+            #     error_count += 1
+
+            # elif(msgType == 5):
+            #     print("Received ACK, stopping transmission")
+            #     waiting_ack = False
+            #     time.sleep(0.5)
+            #     self.tx.sendBuffer(empacotador.empacotar(data_to_send,7,txLen))
+            #     break
             
             if(msgType == 7):
-                print("Received stop msg, stopping transmission now.")
+                print("Stopping transmission now.")
                 break
             if(error_count > 5):
                 print("Too many atempts, shutting down")
