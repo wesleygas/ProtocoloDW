@@ -25,3 +25,6 @@ STUFFING:
 TAIL/EOP:
 
 0xBEBADA || 190 186 218  (Pq é legal e dá pra ler facil)
+
+
+0xD5828281	CRC - Utilizado em protocolos de aviação
