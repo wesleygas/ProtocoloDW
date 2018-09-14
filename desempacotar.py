@@ -2,7 +2,7 @@ def depack(data,len_data):
     head_size = 20
     data_list = list(data)
     if (len(data_list)<21):
-        return None, False, None
+        return None, False, None, None, None, None
     head = data_list[:head_size]
     # print(data_list)
 
@@ -29,20 +29,20 @@ def depack(data,len_data):
 	# print(size)
     if (len(list_unpacked) == size and found_eop == True):
 
-    	return msg_type, True, bytes(list_unpacked)
+    	return msg_type, True, bytes(list_unpacked), package_number, package_total, package_expected
     elif (found_eop == False):
     	print("EOP não encontrado")
-    	return msg_type, False, bytes(list_unpacked)
+    	return msg_type, False, bytes(list_unpacked), package_number, package_total, package_expected
     elif (len(list_unpacked) != size):
     	print("Tamanho no HEAD não são compativeis com os dados recebidos")
     	print("Deveria ser {0} bytes e foram {1}".format(len(list_unpacked),  size))
-    	return msg_type, False, bytes(list_unpacked)
+    	return msg_type, False, bytes(list_unpacked), package_number, package_total, package_expected
     else:
     	return msg_type, False, bytes(list_unpacked), package_number, package_total, package_expected
 
 
 
-    return msg_type, False, bytes(list_unpacked)
+    return msg_type, False, bytes(list_unpacked), package_number, package_total, package_expected
 
 def find_EOP(len_data, data_list,head_size):
     list_unpacked = []
