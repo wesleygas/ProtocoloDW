@@ -139,16 +139,15 @@ class enlace(object):
 
 
     def getData(self, size):
-        """ Get n data over the enlace interface
-        Return the byte array and the size of the buffer
-        """
-
         info_util = b""
 
 
         self.rx.clearBuffer()
         msg_types_valid = [1,3,4,7]
         msg_types_received =[]
+        packages_received = []
+        bytes_received = b""
+
         print('entrou na leitura e tentara ler em algum momento' )
         while(True):
             self.rx.clearBuffer()
@@ -168,7 +167,7 @@ class enlace(object):
                 while(time.time()-startTime<15):
 
                     data = self.rx.getNData()
-                    msg_type, data_valid , data_parsed = desempacotar.depack(data,len(data))
+                    msg_type, data_valid, data_parsed, package_number, package_total, package_expected = desempacotar.depack(data,len(data))
                     
 
                     if msg_type == 1:
@@ -178,7 +177,6 @@ class enlace(object):
    
                    
                     elif (msg_type in msg_types_valid):
-                        # print("recebi isso aqui", msg_type)
                         if (msg_type not in msg_types_received):
                             startTime = time.time()
                             if msg_type == msg_types_valid[len(msg_types_received)]:
@@ -197,30 +195,25 @@ class enlace(object):
                     if msg_type != None:
 
                         if (msg_types_received == [1]):
-                            # print("mandei o tipo 2")
-                            # self.rx.clearBuffer()
                             self.tx.sendBuffer(empacotador.empacotar([],2,0))
                         
                         elif (msg_types_received == [1,3]):
-                            # print("hurray")
                             pass
 
                         elif (msg_types_received == [1,3,4]):
-                            # print(msg_types_received)
-                            pass
+                            
+                            packages_received.append(package_number)
+                            bytes_received += data_parsed
 
                             if data_valid:
                                 self.tx.sendBuffer(empacotador.empacotar([],5,0))
-                                # print("mandei o tipo 5")
                                 info_util = data_parsed
-
                                 
                             else:
                                 self.tx.sendBuffer(empacotador.empacotar([],6,0))
-                                # print("mandei o tipo 6")
 
                         elif(msg_types_received == [1,3,4,7]):
-                            return (info_util, len(info_util))
+                            return (bytes_received, len(bytes_received))
 
                         if (msg_type == 7):
                             return(b"", 0)
