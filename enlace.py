@@ -86,7 +86,7 @@ class enlace(object):
                 self.rx.clearBuffer()
                 self.tx.sendBuffer(empacotador.empacotar(0,3,0)[0])
                 responseTime = time.time()
-                while(time.time() - responseTime < 4):
+                while(time.time() - responseTime < 3):
                     dados = self.rx.getNData()
                     msgType, isOk, data, rxPack_number, rxPack_total, rxPack_expected = desempacotar.depack(dados,len(dados))
                     if(msgType == 2):
@@ -94,8 +94,7 @@ class enlace(object):
                         print(" ----- Reenviando tipo 3")
                 else:
                     data_type = 4
-            elif(data_type == 4):         
-                print("Sending actual Data")
+            elif(data_type == 4):
                 package_number = 0
                 while package_number < len(package_list) and txIsUp:
                     package = package_list[package_number]
@@ -103,26 +102,27 @@ class enlace(object):
                     while(time.time() - responseTime < 10):
                         dados = self.rx.getNData()
                         msgType, isOk, data, rxPack_number, rxPack_total, rxPack_expected = desempacotar.depack(dados,len(dados))
-                        if(msgType == 5):
-                            print("Received ACK for package", package_number)
-                            responseTime = time.time()
-                            package_number += 1
-                            #msgType = 7
-                            #data_type = 0
-                            #self.tx.sendBuffer(empacotador.empacotar([],7,0))
-                            break
-                        elif(msgType == 6):
-                            print("Received NACK, resending package {0} for the {1} time".format(package_number,error_count+1))
-                            responseTime = time.time()
-                            error_count += 1                            
-                            break
-                        elif(msgType == 8):
-                            package_number = rxPack_expected
-                            break
-                        if(msgType == 7):
-                            print("Received \"Tchau\", stopping transmission now.")
-                            txIsUp = False
-                            break
+                        if(isOk):
+                            if(msgType == 5):
+                                print("Received ACK for package", package_number)
+                                responseTime = time.time()
+                                package_number += 1
+                                msgType = 4
+                                break
+                            elif(msgType == 6):
+                                print("Received NACK, resending package {0} for the {1} time".format(package_number,error_count+1))
+                                responseTime = time.time()
+                                error_count += 1 
+                                msgType = 4                           
+                                break
+                            elif(msgType == 8):
+                                package_number = rxPack_expected
+                                msgType = 4
+                                break
+                            if(msgType == 7):
+                                print("Received \"Tchau\", stopping transmission now.")
+                                txIsUp = False
+                                break
                         if(error_count > 5):
                             print("Too many atempts, shutting down")
                             self.tx.sendBuffer(empacotador.empacotar([],7,0)[0])
