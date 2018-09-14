@@ -14,7 +14,7 @@ def empacotar(data, data_type, size):
         payloads = slicer(dataList, size)
         #TODO: Stuff this shit!
         
-        print(len(payloads[0]))
+        #print(len(payloads[0]))
         for i in range(len(payloads)):
             head = [0]*20
             head[0] = len(payloads[i])
@@ -28,7 +28,7 @@ def empacotar(data, data_type, size):
     elif(data_type == 8):
         head = [0]*20
         head[5] = data_type
-        head[6:7] = list(data.to_bytes(2, byteorder='big'))
+        head[6:8] = list(data.to_bytes(2, byteorder='big'))
         packedData = head + end_of_package
         packedData_List.append(bytes(packedData))
     
