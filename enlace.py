@@ -154,14 +154,15 @@ class enlace(object):
         self.rx.clearBuffer()
         msg_types_valid = [1,3,4,7]
         msg_types_received =[]
-        packages_received = []
+        # contagem de pacotes
+        packages_received = -1
         bytes_received = b""
 
         print('entrou na leitura e tentara ler em algum momento' )
         while(True):
             self.rx.clearBuffer()
             data = self.rx.getNData()
-            msg_type, data_valid , data_parsed = desempacotar.depack(data,len(data))
+            msg_type, data_valid , data_parsed , package_number, package_total, package_expected = desempacotar.depack(data,len(data))
 
 
             if (data_valid == False or msg_type != 1):
@@ -204,22 +205,39 @@ class enlace(object):
                     if msg_type != None:
 
                         if (msg_types_received == [1]):
-                            self.tx.sendBuffer(empacotador.empacotar([],2,0))
+                            self.tx.sendBuffer(empacotador.empacotar(0,2,0)[0])
                         
                         elif (msg_types_received == [1,3]):
+                            self.rx.clearBuffer()
                             pass
 
                         elif (msg_types_received == [1,3,4]):
                             
-                            packages_received.append(package_number)
-                            bytes_received += data_parsed
 
                             if data_valid:
-                                self.tx.sendBuffer(empacotador.empacotar([],5,0))
-                                info_util = data_parsed
+
+                                if package_number == (packages_received + 1):
+                                    pacote_enviado = empacotador.empacotar(0,5,0)[0]
+                                    # print(pacote_enviado)
+                                    self.tx.sendBuffer(pacote_enviado)
+                                    print("Recebi o pacote correto, pacote {0} de {1}".format(package_number, package_total) )
+                                    bytes_received += data_parsed
+                                    packages_received = package_number
+
+
+                                    if package_number == package_total:
+                                        self.tx.sendBuffer(empacotador.empacotar(0,7,0)[0])
+                                        return (bytes_received, len(bytes_received))
+
+
+                                else:
+                                    pacote_erro = empacotador.empacotar((packages_received+1),8,0)[0]
+                                    # print(pacote_erro)
+                                    self.tx.sendBuffer(pacote_erro)
+                                    print("Não recebi o pacote correto, deveria ser {0} e é {1}".format(packages_received + 1, package_number) )
                                 
                             else:
-                                self.tx.sendBuffer(empacotador.empacotar([],6,0))
+                                self.tx.sendBuffer(empacotador.empacotar(0,6,0)[0])
 
                         elif(msg_types_received == [1,3,4,7]):
                             return (bytes_received, len(bytes_received))

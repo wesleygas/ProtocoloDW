@@ -40,8 +40,6 @@ def depack(data,len_data):
     else:
     	return msg_type, False, bytes(list_unpacked), package_number, package_total, package_expected
 
-
-
     return msg_type, False, bytes(list_unpacked), package_number, package_total, package_expected
 
 def find_EOP(len_data, data_list,head_size):
