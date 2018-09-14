@@ -1,37 +1,47 @@
-maxPayloadLen = 65535
+maxPayloadLen = 128
 EOP = int("0xBEBADA", 16)
 
+#Quando data_type=4, recebe um byte-array e retorna uma lista com byte arrays
+#de tamanho máximo "maxPayloadLen" [(bytearray,(bytearray),...]
+#Quando data_type=8, recebe o número do pacote em (data)
+#no mais, apenas retorna um pacote nulo do tipo especificado [(bytearray)]
 def empacotar(data, data_type, size):
     global maxPayloadLen, EOP
-    packedData = []
-    dataList = list(data)
-    
+    packedData_List = []
+    end_of_package = list(EOP.to_bytes(3, byteorder='big'))  
     if(data_type == 4):
+        dataList = list(data)
         payloads = slicer(dataList, size)
         #TODO: Stuff this shit!
         
         print(len(payloads[0]))
         for i in range(len(payloads)):
             head = [0]*20
-            payloadSize = (len(payloads[i])).to_bytes(2, byteorder='big')
-            head[0:2] = payloadSize
-            head[2] = i
-            head[3] = len(payloads)
-            head[4] = data_type
-            head = bytes(head)
+            head[0] = len(payloads[i])
+            packageNumber = (i).to_bytes(2, byteorder='big')
+            head[1:3] = packageNumber
+            head[3:5] = (len(payloads)).to_bytes(2, byteorder='big')
+            head[5] = data_type
             stuffed_payload = stuff(payloads[i])
-
-            packedData += list(head) + stuffed_payload + list(EOP.to_bytes(3, byteorder='big'))
+            packedData_List.append(bytes(head + stuffed_payload + end_of_package))
+    
+    elif(data_type == 8):
+        head = [0]*20
+        head[5] = data_type
+        head[6:7] = list(data.to_bytes(2, byteorder='big'))
+        packedData = head + end_of_package
+        packedData_List.append(bytes(packedData))
+    
     else:
         head = [0]*20
-        head[4] = data_type
-        end_of_package = list(EOP.to_bytes(3, byteorder='big'))
+        head[5] = data_type
         packedData = head + end_of_package
+        packedData_List.append(bytes(packedData))
 
     
-    return bytes(packedData)
+    return packedData_List
 
-
+#Recebe uma lista com n elementos e divide em listas de tamanho maximo=size
 def slicer(data, size):
     global maxPayloadLen
     dataCache = list(data)
@@ -45,7 +55,7 @@ def slicer(data, size):
 
     return payloads
 
-
+#Faz o stuffing do EOP
 def stuff(data):
     stuffed_payload = []       
     i = 0
