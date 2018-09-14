@@ -73,7 +73,7 @@ class enlace(object):
                 responseTime = time.time()
                 while(time.time() - responseTime < 1.5):
                     dados = self.rx.getNData()
-                    msgType, isOk, data = desempacotar.depack(dados,len(dados))
+                    msgType, isOk, data, rxPack_number, rxPack_total, rxPack_expected = desempacotar.depack(dados,len(dados))
                     print("RECEBI MSG DO TIPO",msgType)
                     if(msgType == 2):
                         data_type = 2
@@ -88,7 +88,7 @@ class enlace(object):
                 responseTime = time.time()
                 while(time.time() - responseTime < 4):
                     dados = self.rx.getNData()
-                    msgType, isOk, data = desempacotar.depack(dados,len(dados))
+                    msgType, isOk, data, rxPack_number, rxPack_total, rxPack_expected = desempacotar.depack(dados,len(dados))
                     if(msgType == 2):
                         self.tx.sendBuffer(empacotador.empacotar([],3,0)[0])
                         print(" ----- Reenviando tipo 3")
@@ -102,7 +102,7 @@ class enlace(object):
                     self.tx.sendBuffer(package)
                     while(time.time() - responseTime < 10):
                         dados = self.rx.getNData()
-                        msgType, isOk, data = desempacotar.depack(dados,len(dados))
+                        msgType, isOk, data, rxPack_number, rxPack_total, rxPack_expected = desempacotar.depack(dados,len(dados))
                         if(msgType == 5):
                             print("Received ACK for package", package_number)
                             responseTime = time.time()
@@ -116,7 +116,9 @@ class enlace(object):
                             responseTime = time.time()
                             error_count += 1                            
                             break
-            
+                        elif(msgType == 8):
+                            package_number = rxPack_expected
+                            break
                         if(msgType == 7):
                             print("Received \"Tchau\", stopping transmission now.")
                             txIsUp = False
