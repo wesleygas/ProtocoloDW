@@ -6,8 +6,8 @@ HEAD -  20b:
 2[1:3] bytes para package number (max 65535)  Max file size 16.7mb
 2[3:5] byte para o total de pacotes 
 1[5] byte  para tipo da mensagem:
-1[6:7] byte para Erro de envio/Pacote esperado
-4[7:11] bytes para o CRC
+1[6:8] byte para Erro de envio/Pacote esperado
+4[8:12] bytes para o CRC
     
     Tipos:
         1 - (Client) Server, você me ouve?
