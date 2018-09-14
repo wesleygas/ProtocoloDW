@@ -1,3 +1,5 @@
+from crc import crc16
+
 def depack(data,len_data):
     head_size = 20
     data_list = list(data)
@@ -12,9 +14,10 @@ def depack(data,len_data):
     # size = 
     package_number = int.from_bytes(head[1:3], byteorder = 'big')
     package_total = int.from_bytes(head[3:5], byteorder = 'big')
+    crc_expected = int.from_bytes(head[8:12], byteorder = 'big')
     msg_type = int(head[5])
 
-
+    
     if msg_type == 8:
         package_expected = int.from_bytes(head[6:8], byteorder = 'big')
     else:
@@ -23,20 +26,37 @@ def depack(data,len_data):
     print("--------------------------------")
     print("A mensagem é do tipo {0}".format(msg_type))
     # print("Overhead:" , (size/len_data))
-
+    
 
     found_eop,list_unpacked = find_EOP(len_data,data_list,head_size)
+
+
+    crc_received = crc16(bytes(list_unpacked))
+    
 	# print(size)
-    if (len(list_unpacked) == size and found_eop == True):
+    if (crc_expected == crc_received and msg_type == 4):
+        print("Comparação entre crcs é {0}".format(crc_received==crc_expected))
+
+
+    if (crc_expected != crc_received and msg_type == 4):
+        print("Comparação entre crcs é {0}".format(crc_received==crc_expected))
+        return msg_type, False, bytes(list_unpacked), package_number, package_total, package_expected
+
+    elif (len(list_unpacked) == size and found_eop == True ):
 
     	return msg_type, True, bytes(list_unpacked), package_number, package_total, package_expected
+
     elif (found_eop == False):
     	print("EOP não encontrado")
     	return msg_type, False, bytes(list_unpacked), package_number, package_total, package_expected
+
+
+
     elif (len(list_unpacked) != size):
     	print("Tamanho no HEAD não são compativeis com os dados recebidos")
     	print("Deveria ser {0} bytes e foram {1}".format(len(list_unpacked),  size))
     	return msg_type, False, bytes(list_unpacked), package_number, package_total, package_expected
+
     else:
     	return msg_type, False, bytes(list_unpacked), package_number, package_total, package_expected
 

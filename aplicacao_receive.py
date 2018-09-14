@@ -27,7 +27,7 @@ from tkinter.filedialog import asksaveasfile
 # se estiver usando windows, o gerenciador de dispositivos informa a porta
 
 #serialName = "/dev/ttyACM0"           # Ubuntu (variacao de)
-serialName = "/dev/cu.usbmodem146231" # Mac    (variacao de)
+serialName = "/dev/cu.usbmodem144241" # Mac    (variacao de)
 # serialName = "COM14"                  # Windows(variacao de)
 
 mockData = True
