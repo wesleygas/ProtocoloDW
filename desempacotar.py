@@ -5,8 +5,20 @@ def depack(data,len_data):
         return None, False, None
     head = data_list[:head_size]
     # print(data_list)
-    size = int.from_bytes(head[0:2], byteorder = 'big')
-    msg_type = int(head[4])
+
+
+    size = int(head[0])
+    
+    # size = 
+    package_number = int.from_bytes(head[1:3], byteorder = 'big')
+    package_total = int.from_bytes(head[3:5], byteorder = 'big')
+    msg_type = int(head[5])
+
+
+    if msg_type == 8:
+        package_expected = int.from_bytes(head[6:8], byteorder = 'big')
+    else:
+        package_expected = None
 
     print("--------------------------------")
     print("A mensagem é do tipo {0}".format(msg_type))
@@ -26,7 +38,7 @@ def depack(data,len_data):
     	print("Deveria ser {0} bytes e foram {1}".format(len(list_unpacked),  size))
     	return msg_type, False, bytes(list_unpacked)
     else:
-    	return msg_type, False, bytes(list_unpacked)
+    	return msg_type, False, bytes(list_unpacked), package_number, package_total, package_expected
 
 
 
