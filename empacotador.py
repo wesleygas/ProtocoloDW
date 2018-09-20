@@ -23,7 +23,7 @@ def empacotar(data, data_type, size):
             head[1:3] = packageNumber
             head[3:5] = (len(payloads)).to_bytes(2, byteorder='big')
             head[5] = data_type
-            head[8:12] =  crc16(payloads[i]).to_bytes(4, byteorder='big')
+            head[8:12] =  int(crc16(payloads[i])).to_bytes(4, byteorder='big')
             stuffed_payload = stuff(payloads[i])
             packedData_List.append(bytes(head + stuffed_payload + end_of_package))
     
