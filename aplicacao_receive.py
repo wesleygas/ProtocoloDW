@@ -30,7 +30,7 @@ from tkinter.filedialog import asksaveasfile
 serialName = "/dev/cu.usbmodem144241" # Mac    (variacao de)
 # serialName = "COM14"                  # Windows(variacao de)
 
-mockData = True
+mockData = False
 
 print("porta COM aberta com sucesso")
 
